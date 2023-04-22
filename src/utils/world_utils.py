@@ -13,18 +13,32 @@ from .datetime_utils import get_current_datetime
 def generate_world_data(
     world_shape: tuple[int, int],
     scale: float,
-    detail_level: int,  # octaves
-    persistence: float,  # amplitude
-    lacunarity: float,  # frequency
-    base: int = 0,  # base height
-):
+    detail_level: int,
+    persistence: float,
+    lacunarity: float,
+    base: int = 0,
+) -> np.ndarray:
+    """
+    Generates a 2D array (matrix) of Perlin noise values representing a world terrain.
+
+    Args:
+    - world_shape: A tuple of integers representing the dimensions of the world in pixels.
+    - scale: A float representing the scale of the Perlin noise.
+    - detail_level: An integer representing the number of octaves used to generate the Perlin noise.
+    - persistence: A float representing the amplitude of the Perlin noise.
+    - lacunarity: A float representing the frequency of the Perlin noise.
+    - base: An integer representing the base height of the terrain.
+
+    Returns:
+    - A 2D numpy array (matrix) of floats representing the terrain of the world.
+    """
     # Create a matrix of zeros
     world = np.zeros(world_shape)
 
     # Fill the matrix with Perlin noise
     for x in range(world_shape[0]):
         for y in range(world_shape[1]):
-            world[x][y] = noise.pnoise2(
+            world[x][y] = pnoise2(
                 y / scale,
                 x / scale,
                 octaves=detail_level,
@@ -38,9 +52,20 @@ def generate_world_data(
 
 def colorize_world_data(
     world_data: np.ndarray,
-    conditions: list[float] | tuple[float, float, float],
+    conditions: list[float],
     colors: list[tuple[int, int, int]],
-):
+) -> np.ndarray:
+    """
+    Takes in a 2D array of world data and applies colors to the values based on a list of conditions.
+
+    Args:
+    - world_data: A 2D numpy array of floats representing the terrain of the world.
+    - conditions: A list of floats representing the threshold values to be compared against the `world_data`.
+    - colors: A list of tuples representing the RGB colors to be assigned to the world data based on the threshold values.
+
+    Returns:
+    - A 3D numpy array of RGB values representing the terrain of the world with colors applied based on the threshold values.
+    """
     # Create a matrix of zeros with extra channels for RGB
     color_world = np.zeros(world_data.shape + (3,), dtype="uint8")
 
