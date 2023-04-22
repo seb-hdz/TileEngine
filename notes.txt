@@ -1,0 +1,100 @@
+# Recyclr Tile Engine
+
+este proyecto está compuesto por
++ world data generation tools
++ tiles system
++ map editor
+
+## World data generation tools
+
+### Flujo
+-- al arrancar el programa, se intenta crear un directorio "temporal"
+-> conditions are set (x,y,z) = [-0.05, 0.0, 1.0] // a slider would be nice
+|  
+|  -> a World() is created:
+|  |  + conditions array (3)
+|  |  + colors array (tuples of RGB)
+|  |  + scale = "200.0"
+|  |  + persistence = "0.55"
+|  |  - lacunarity = 2.0
+|  |  - octaves = 6
+|  |
+|  |  -> create():
+|  |  |  -> generate world data():
+|  |  |   | + shape (tuple)
+|  |  |   | + scale
+|  |  |   | + octaves
+|  |  |   | + persistance
+|  |  |   | + lacunarity
+|  |  |   | + base
+|  |  |   | 
+|  |  |   | -> create a world matrix of zeros
+|  |  |   | `world = np.zeros(shape)`
+|  |  |   | 
+|  |  |   | -- the world array of zeros is filled with noise
+|  |  |   | -> e in matrix = `noise.pnoise2(...)`
+|  |  |   |     + e.y / scale
+|  |  |   |     + e.x / scale
+|  |  |   |     + octaves
+|  |  |   |     + persistence
+|  |  |   |     + lacunarity
+|  |  |   |     + base
+|  |  |   | -> then return the matrix with data
+|  |  |
+|  |  |  -> colorize():
+|  |  |   | + world data (matrix)
+|  |  |   | + shape (tuple)
+|  |  |   | + conditions
+|  |  |   | + colors (array of RGB tuples)
+|  |  |   | 
+|  |  |   | -- We add a third element in the tuple for RGB channels
+|  |  |   | `color_world = np.zeros(world data.shape + (3,), dtype="uint8")`
+|  |  |   | -> e in matrix :
+|  |  |   |   -- an "index" value is calculated 
+|  |  |   |   /* this is how colors are mapped to the matrix data */
+|  |  |   |   -> index = multicompare():
+|  |  |   |   | + e (element of matrix) // value to be compared
+|  |  |   |   | + conditions array
+|  |  |   |   | 
+|  |  |   |   | -> for (index, condition) in enum(condition array):
+|  |  |   |   | -> if value < condition;
+|  |  |   |   | -> then return index
+|  |  |   |   
+|  |  |   |   -> e = colors_array[index]
+|  |  |   | -> then return color_world data
+|  |
+|  |  -> save_image():
+|  |  |   | + color_world data
+|  |  |   | + name (optional)
+|  |  |   |
+|  |  |   | -- an image is created from the colored world matrix
+|  |  |   | `im = Image.fromarray(color_world, "RGB")`
+|  |  |   | -- the image is saved in the temp folder
+|  |  |   | `im.save(temp/world_preview.png)`
+|  |  
+|  |  -> world_to_tile():
+|  |  | + world matrix data // world.world_data
+|  |  | + shape (tuple) // (1024, 1024)
+|  |  | + conditions array
+|  |  |
+|  |  | -> create a matrix of zeros
+|  |  | `tile_data = np.zeros(shape, dtype="uint8)`
+|  |  |  -> for e in tiles:
+|  |  |   -- an "index" value is calculated
+|  |  |   -> index = multi_compare(e, conditions array):
+|  |  |   -> e = index // this is e = tile value
+|  |  | -> then return the matrix with data
+|  |  
+|  |  -> save_tile_file(tile_data):
+|  |  `np.savetxt("name", tile_data, delimiter=" ", fmt="%d")`
+
+
+Nuevo flujo:
+
+-- antes que se abra la GUI
+-> setup():
+|  -> create dump directory
+
+-- al abrir la GUI
+-- tomaremos los valores de los widgets dentro de la gui
+-- generaremos la primera imagen preview (cambiar world data)
