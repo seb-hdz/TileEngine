@@ -1,13 +1,12 @@
 import tkinter as tk
-from PIL import Image
 import numpy as np
 
-from .components.control_panel import ControlPanel
-from .components.input_box import InputBox
-from .components.image_preview import ImagePreview
-from .components.preview_controls import PreviewControls
+from .ui.components.control_panel import ControlPanel
+from .ui.components.input_box import InputBox
+from .ui.components.image_preview import ImagePreview
+from .ui.components.preview_controls import PreviewControls
 
-from ..utils.world_utils import (
+from .utils.world_utils import (
     generate_world_data,
     colorize_world_data,
     save_as_image,
@@ -48,7 +47,7 @@ class MainWindow:
         # ! This should be deleted
         # TODO: The image should update automatically
         self.generate_button = tk.Button(
-            self.root, text="Generate", command=self.generate
+            self.root, text="Generate / Save", command=self.generate
         )
         self.generate_button.grid(row=4, column=0)
 
@@ -78,9 +77,9 @@ class MainWindow:
         # Setting the array of colors
         # TODO: This should also be set by user input
         colors = [
-            (200, 230, 182),  # This is a pastel green color
-            (230, 182, 200),  # This is a pastel pink color
             (182, 200, 230),  # This is a pastel blue color
+            (230, 182, 200),  # This is a pastel pink color
+            (200, 230, 182),  # This is a pastel green color
         ]
 
         # Defining world's parameters

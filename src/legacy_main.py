@@ -1,4 +1,3 @@
-from os import environ as env
 from os import mkdir
 import random
 

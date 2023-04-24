@@ -38,7 +38,7 @@ def generate_world_data(
     # Fill the matrix with Perlin noise
     for x in range(world_shape[0]):
         for y in range(world_shape[1]):
-            world[x][y] = pnoise2(
+            world[x][y] = noise.pnoise2(
                 y / scale,
                 x / scale,
                 octaves=detail_level,
@@ -54,6 +54,7 @@ def colorize_world_data(
     world_data: np.ndarray,
     conditions: list[float],
     colors: list[tuple[int, int, int]],
+    default_color: tuple[int, int, int] = (0, 0, 0),
 ) -> np.ndarray:
     """
     Takes in a 2D array of world data and applies colors to the values based on a list of conditions.
@@ -66,6 +67,11 @@ def colorize_world_data(
     Returns:
     - A 3D numpy array of RGB values representing the terrain of the world with colors applied based on the threshold values.
     """
+    if len(conditions) != len(colors):
+        raise ValueError(
+            f"Length of conditions ({len(conditions)}) must equal length of colors ({len(colors)})."
+        )
+
     # Create a matrix of zeros with extra channels for RGB
     color_world = np.zeros(world_data.shape + (3,), dtype="uint8")
 
@@ -74,7 +80,11 @@ def colorize_world_data(
             # An index value is calculated
             # This is how colors are assigned to the world data
             index = multi_compare(world_data[x][y], conditions)
-            color_world[x][y] = colors[index]
+
+            if index is not None:
+                color_world[x][y] = colors[index]
+            else:
+                color_world[x][y] = default_color
 
     return color_world
 
